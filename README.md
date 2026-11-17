@@ -2,46 +2,76 @@
 
 تطبيق توصيل خاص **من وإلى المطارات فقط** في السعودية. النسخة الأولى فيها **واجهة العميل**: يحجز مشوار، يشوف السعر حسب المسافة، ويتابع حجوزاته.
 
-- **التطبيق** (`apps/mobile`): Expo + React Native + Expo Router — يشتغل على **أندرويد و iOS والويب** من نفس الكود. عربي (RTL) افتراضياً، وفيه إنجليزي.
-- **الباك إند** (`apps/api`): Node.js + Express + Prisma + SQLite.
+| الجزء | المجلد | التقنية |
+|---|---|---|
+| **الموقع + الـ API** | `apps/web` | Next.js 16 + Prisma + PostgreSQL — جاهز للنشر على **Vercel** |
+| **تطبيق الجوال** | `apps/mobile` | Expo + React Native (أندرويد و iOS) — يستخدم نفس الـ API |
+| **مشترك** | `packages/shared` | الأنواع والنصوص (عربي/إنجليزي) وحساب الأوقات |
 
-## التشغيل
+موقع Next.js هو الباك إند الوحيد: صفحات الموقع والـ API (`/api/...`) في نفس المشروع، وتطبيق الجوال يتصل بنفس الـ API.
 
-المتطلبات: Node.js 20 أو أحدث.
+## التشغيل محلياً
+
+المتطلبات: Node.js 20 أو أحدث، وقاعدة PostgreSQL (محلية، أو مجانية من [Neon](https://neon.tech)).
 
 ```bash
 npm install
 ```
 
 ```bash
-cp apps/api/.env.example apps/api/.env
-npm run setup -w apps/api
+cp apps/web/.env.example apps/web/.env
+```
+
+عدّل `DATABASE_URL` و `DATABASE_URL_UNPOOLED` في `apps/web/.env` لقاعدة بياناتك، ثم:
+
+```bash
+npm run setup -w apps/web
 ```
 
 ```bash
-npm run api
+npm run dev
 ```
 
-وفي نافذة ثانية:
+الموقع يفتح على http://localhost:3000
+
+### تطبيق الجوال
+
+مع تشغيل الموقع، في نافذة ثانية:
 
 ```bash
 npm run app
 ```
 
-بعدها اضغط `w` للويب، أو امسح الـ QR بتطبيق **Expo Go** على جوالك.
-لو تجرب على جوال حقيقي، التطبيق يتصل تلقائياً بـ IP جهازك على المنفذ 4000؛ ولو احتجت تغيّره انسخ `apps/mobile/.env.example` إلى `apps/mobile/.env` وعدّل `EXPO_PUBLIC_API_URL`.
+امسح الـ QR بتطبيق **Expo Go**. التطبيق يتصل تلقائياً بـ IP جهازك على المنفذ 3000؛ ولو تبيه يتصل بالموقع المنشور، انسخ `apps/mobile/.env.example` إلى `apps/mobile/.env` وحط `EXPO_PUBLIC_API_URL=https://your-app.vercel.app/api`.
 
-### تسجيل الدخول أثناء التطوير
-الدخول برقم الجوال + رمز تحقق. لسا ما ربطنا مزود SMS، فالرمز **يطبع في سجل السيرفر** ويظهر في شاشة الدخول (فقط إذا `NODE_ENV` مو `production`).
+## النشر على Vercel
 
-## متغيرات البيئة (`apps/api/.env`)
+1. ارفع المستودع على GitHub، وفي Vercel اختر **Add New → Project** واستورده.
+2. **Root Directory**: اختر `apps/web` (Vercel يتعرف على Next.js تلقائياً).
+3. من تبويب **Storage** أضف قاعدة **Neon Postgres** واربطها بالمشروع — تضيف `DATABASE_URL` و `DATABASE_URL_UNPOOLED` تلقائياً.
+4. في **Environment Variables** أضف:
+   - `JWT_SECRET` — نص طويل عشوائي (إلزامي)
+   - `GOOGLE_MAPS_API_KEY` — اختياري
+   - `OTP_DEV_MODE=true` — اختياري، للتجربة فقط قبل ربط SMS (يظهر رمز التحقق في الشاشة)
+5. اضغط **Deploy**. أمر البناء يطبّق ترحيلات قاعدة البيانات تلقائياً (`prisma migrate deploy`).
+6. عبّي المطارات والأسعار مرة وحدة (من جهازك، بنفس رابط قاعدة الإنتاج):
+
+```bash
+DATABASE_URL="رابط-قاعدة-الإنتاج" npm run db:seed -w apps/web
+```
+
+## متغيرات البيئة (`apps/web/.env`)
 
 | المتغير | الوصف |
 |---|---|
-| `DATABASE_URL` | قاعدة البيانات (افتراضياً SQLite `file:./dev.db`) |
-| `JWT_SECRET` | سر توقيع الجلسات — غيّره لنص طويل عشوائي |
-| `PORT` | منفذ السيرفر (4000) |
-| `GOOGLE_MAPS_API_KEY` | اختياري — لمسافة الطريق الفعلية وبحث العناوين عبر Google. بدونه: المسافة تقديرية (خط مستقيم × 1.3) والبحث عبر OpenStreetMap |
+| `DATABASE_URL` | رابط PostgreSQL (على Neon: الرابط المجمّع pooled) |
+| `DATABASE_URL_UNPOOLED` | رابط مباشر للترحيلات (محلياً: نفس الرابط) |
+| `JWT_SECRET` | سر توقيع الجلسات — إلزامي في الإنتاج |
+| `GOOGLE_MAPS_API_KEY` | اختياري — مسافة الطريق الفعلية وبحث العناوين. بدونه: المسافة تقديرية (خط مستقيم × 1.3) والبحث عبر OpenStreetMap |
+| `OTP_DEV_MODE` | `true` يظهر رمز التحقق في الشاشة حتى في الإنتاج — للتجربة فقط |
+
+### تسجيل الدخول
+برقم الجوال + رمز تحقق. لسا ما ربطنا مزود SMS، فالرمز **يطبع في سجل السيرفر**، ويظهر في الشاشة أثناء التطوير (أو إذا `OTP_DEV_MODE=true`).
 
 ## التسعير
 
@@ -57,7 +87,7 @@ npm run app
 | فاخر | 4 | 3 | 60 | 3.2 | 120 |
 | فان | 12 | 10 | 70 | 3.0 | 140 |
 
-الأسعار والمطارات في `apps/api/prisma/seed.ts` — عدّلها وشغّل `npm run db:seed -w apps/api`. السيرفر يحسب السعر بنفسه دائماً وما يعتمد على السعر اللي يرسله التطبيق.
+الأسعار والمطارات في `apps/web/prisma/seed.ts` — عدّلها وشغّل `npm run db:seed -w apps/web`. السيرفر يحسب السعر بنفسه دائماً وما يعتمد على السعر اللي يرسله العميل.
 
 قواعد الحجز: الموعد بعد ساعة على الأقل، العنوان ضمن 250 كم من المطار، رقم الرحلة إلزامي عند الاستقبال من المطار، والإلغاء مسموح قبل الموعد بساعتين.
 
@@ -65,14 +95,16 @@ npm run app
 
 | | |
 |---|---|
-| `POST /auth/request-otp` · `POST /auth/verify-otp` | الدخول برقم الجوال |
-| `GET /auth/me` · `PATCH /auth/me` | بيانات الحساب |
-| `GET /airports` · `GET /vehicle-classes` | المطارات وفئات السيارات |
-| `GET /places/search?q=` | بحث العناوين داخل السعودية |
-| `POST /quotes` | السعر والمسافة لكل فئة |
-| `POST /bookings` · `GET /bookings` · `GET /bookings/:id` · `POST /bookings/:id/cancel` | الحجوزات |
+| `POST /api/auth/request-otp` · `POST /api/auth/verify-otp` | الدخول برقم الجوال |
+| `GET /api/auth/me` · `PATCH /api/auth/me` | بيانات الحساب |
+| `GET /api/airports` · `GET /api/vehicle-classes` | المطارات وفئات السيارات |
+| `GET /api/places/search?q=` | بحث العناوين داخل السعودية |
+| `POST /api/quotes` | السعر والمسافة لكل فئة |
+| `POST /api/bookings` · `GET /api/bookings` · `GET /api/bookings/:id` · `POST /api/bookings/:id/cancel` | الحجوزات |
 
 ## الاختبارات
+
+تحتاج قاعدة PostgreSQL للاختبار (افتراضياً `airport_ride_test` محلياً، أو حدد `TEST_DATABASE_URL`):
 
 ```bash
 npm test
@@ -84,4 +116,3 @@ npm test
 - الدفع الإلكتروني (Moyasar / Tap)
 - خريطة لاختيار الموقع، وتتبع السائق المباشر، وإشعارات
 - متابعة حالة الرحلة الجوية تلقائياً
-- الانتقال إلى PostgreSQL للإنتاج

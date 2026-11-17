@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Platform, Text, View } from "react-native";
 import { api } from "@/api/client";
-import type { Booking } from "@/api/types";
+import type { Booking } from "@airport/shared";
 import { Button, Card, ErrorText, InfoRow, Loading, Muted, Screen, StatusBadge, styles } from "@/components/ui";
 import { useI18n } from "@/i18n";
 import { colors, radius, space } from "@/theme";

@@ -3,7 +3,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { api } from "@/api/client";
-import type { Booking } from "@/api/types";
+import type { Booking } from "@airport/shared";
 import { BookingCard } from "@/components/BookingCard";
 import { Button, ErrorText, Loading, Muted, Screen, Segmented } from "@/components/ui";
 import { useI18n } from "@/i18n";

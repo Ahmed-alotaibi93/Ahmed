@@ -3,7 +3,7 @@ import * as Location from "expo-location";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
 import { api } from "@/api/client";
-import type { Place } from "@/api/types";
+import type { Place } from "@airport/shared";
 import { Button, ErrorText, Muted, styles, textStart } from "@/components/ui";
 import { useI18n } from "@/i18n";
 import { colors, radius, space } from "@/theme";

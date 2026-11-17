@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { api, ApiError, setAuthToken } from "@/api/client";
-import type { User } from "@/api/types";
+import type { User } from "@airport/shared";
 
 interface AuthValue {
   ready: boolean;

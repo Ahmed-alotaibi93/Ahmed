@@ -2,11 +2,11 @@ import { router } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View } from "react-native";
 import { api } from "@/api/client";
-import type { Airport } from "@/api/types";
+import type { Airport } from "@airport/shared";
 import { AddressPicker } from "@/components/AddressPicker";
 import { Button, Card, Chip, ErrorText, Field, Label, Loading, Muted, Segmented, Screen, Stepper } from "@/components/ui";
 import { useI18n } from "@/i18n";
-import { ksaDayKey, ksaDays, slotsForDay } from "@/lib/time";
+import { ksaDayKey, ksaDays, slotsForDay } from "@airport/shared";
 import { useDraft } from "@/state/draft";
 import { space } from "@/theme";
 

@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-brand: #0f2d52;
+  --color-brand-soft: #e8eef7;
+  --color-accent: #f5a524;
+  --color-ink: #14213d;
+  --color-muted: #6b7a90;
+  --color-line: #dde3ec;
+  --color-page: #f4f6fa;
+  --color-danger: #c62828;
+  --color-success: #1e8e5a;
+  --font-sans: var(--font-arabic), system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}

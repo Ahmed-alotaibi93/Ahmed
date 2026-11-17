@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
-import type { Booking } from "@/api/types";
+import type { Booking } from "@airport/shared";
 import { Muted, StatusBadge, styles, textStart } from "@/components/ui";
 import { useI18n } from "@/i18n";
 import { colors, space } from "@/theme";

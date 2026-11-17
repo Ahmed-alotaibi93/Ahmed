@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
-import type { Airport, Direction, Quote, QuoteOption } from "@/api/types";
+import type { Airport, Direction, Quote, QuoteOption } from "@airport/shared";
 
 export interface BookingDraft {
   direction: Direction;

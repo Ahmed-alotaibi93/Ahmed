@@ -1,14 +1,14 @@
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import type { Airport, Booking, Place, Quote, User } from "./types";
+import type { Airport, Booking, Place, Quote, User } from "@airport/shared";
 
 function resolveBaseUrl() {
   if (process.env.EXPO_PUBLIC_API_URL) return process.env.EXPO_PUBLIC_API_URL;
-  if (Platform.OS === "web") return "http://localhost:4000";
+  if (Platform.OS === "web") return "http://localhost:3000/api";
   // على الجوال أثناء التطوير: نفس IP جهاز التطوير اللي يشغل Expo
   const host = Constants.expoConfig?.hostUri?.split(":")[0];
-  if (host) return `http://${host}:4000`;
-  return Platform.OS === "android" ? "http://10.0.2.2:4000" : "http://localhost:4000";
+  if (host) return `http://${host}:3000/api`;
+  return Platform.OS === "android" ? "http://10.0.2.2:3000/api" : "http://localhost:3000/api";
 }
 
 export const API_URL = resolveBaseUrl();

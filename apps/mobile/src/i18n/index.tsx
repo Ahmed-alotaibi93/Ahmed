@@ -3,7 +3,7 @@ import { getLocales } from "expo-localization";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { I18nManager, Platform } from "react-native";
 import { ApiError } from "@/api/client";
-import { ar, en, type Strings } from "./strings";
+import { ar, en, type Strings } from "@airport/shared";
 
 export type Lang = "ar" | "en";
 

@@ -14,7 +14,7 @@ import {
   type ViewStyle,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { BookingStatus } from "@/api/types";
+import type { BookingStatus } from "@airport/shared";
 import { useI18n } from "@/i18n";
 import { colors, radius, space } from "@/theme";
 
