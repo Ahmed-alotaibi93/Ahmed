@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Airport {
+  id       Int       @id @default(autoincrement())
+  code     String    @unique
+  nameAr   String
+  nameEn   String
+  cityAr   String
+  cityEn   String
+  lat      Float
+  lng      Float
+  active   Boolean   @default(true)
+  bookings Booking[]
+}
+
+model VehicleClass {
+  id          Int       @id @default(autoincrement())
+  code        String    @unique
+  nameAr      String
+  nameEn      String
+  seats       Int
+  bags        Int
+  baseFare    Float
+  perKm       Float
+  minFare     Float
+  sortOrder   Int       @default(0)
+  active      Boolean   @default(true)
+  bookings    Booking[]
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  phone     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+}
+
+model OtpCode {
+  id        Int      @id @default(autoincrement())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model Booking {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int
+  airport        Airport      @relation(fields: [airportId], references: [id])
+  airportId      Int
+  vehicleClass   VehicleClass @relation(fields: [vehicleClassId], references: [id])
+  vehicleClassId Int
+  // TO_AIRPORT | FROM_AIRPORT
+  direction      String
+  address        String
+  lat            Float
+  lng            Float
+  pickupAt       DateTime
+  flightNumber   String?
+  passengers     Int
+  bags           Int
+  distanceKm     Float
+  price          Float
+  // PENDING | CONFIRMED | DRIVER_ASSIGNED | ON_THE_WAY | COMPLETED | CANCELLED
+  status         String       @default("PENDING")
+  paymentMethod  String       @default("CASH")
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([userId])
+}
